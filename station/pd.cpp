@@ -5,10 +5,10 @@
 #define pdResist 470
 
 void pdInit(){
-	pinMode(sensorPin, INPUT);
+	pinMode(pdPin, INPUT);
 }
 
-void pdRead(){
+double pdRead(){
 	double sr = analogRead(pdPin)/1023.0*5.0;
-	return sr*sr*psResist*3536.77651315322968377;
+	return sr*sr*pdResist*3536.77651315322968377;
 }
