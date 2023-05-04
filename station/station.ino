@@ -1,30 +1,9 @@
-/*
-#include "rtc.h"
-#include "ldr.h"
-#include "pd.h"
-
-
-void setup(void) {
-	Serial.begin(9600);
-	rtcInit();
-	ldrInit();
-	pdInit();
-	delay(10);
-}
-
-
-void loop(void) {
-	Serial.println(readLDR());
-	Serial.println(RTCSecondRead());
-	Serial.println(pdRead());
-	Serial.println();
-	delay(2000);
-}*/
-
 #include <SoftwareSerial.h>
 #include "ldr.h"
-#define Hall A0
+#define Hall A1
 #include "rtc.h"
+#include "flash.h"
+#include "storage.h"
 
 
 SoftwareSerial BTSerial(4, 3); // RX, TX pins of HC-05
@@ -35,7 +14,12 @@ unsigned long timer, ctimer = 0;
 void setup() {
   Serial.begin(9600);
   BTSerial.begin(9600);
+  delay(100);
   initLDR();
+  RTCinit();
+  //RTCunhalt();
+  flashEnableWrites();
+  RTCwrite(RTCwp,       0b10000000);
 }
 
 void Measure_WindSpeed(){
@@ -85,24 +69,21 @@ void sendSomething()
   sendToEeprom(temperature, wind, readLDR());
       
   char message[35];
-  //sprintf(message, "%s\n%s\n%s\n", myNumber, windd, sun);
-sprintf(message, "%s\n", myNumber);
-BTSerial.write(message);
-sprintf(message, "%s\n", windd);
-BTSerial.write(message);
-sprintf(message, "%s\n", sun);
-BTSerial.write(message);
+  sprintf(message, "%s\n", myNumber);
+  BTSerial.write(message);
+  sprintf(message, "%s\n", windd);
+  BTSerial.write(message);
+  sprintf(message, "%s\n", sun);
+  BTSerial.write(message);
 
- //sprintf(message, "%s\n0.0\n%s\n", myNumber, windd);
-  //BTSerial.write(message, 35);
   
   //char message[20] = "134.7\n23.5\n35.5\n";
   //BTSerial.write(message);
   Serial.println("Sending value: ");
   Serial.println(message);
-   Serial.println(temperature);
-    Serial.println(wind);
-     Serial.println(readLDR());
+  Serial.println(temperature);
+  Serial.println(wind);
+  Serial.println(readLDR());
 }
 
 
@@ -118,7 +99,7 @@ void updateClock()
     RTCwrite(RTCdate,     ((data[4]-48) << 4) || (data[5]-48));
     RTCwrite(RTChours,    ((data[8]-48) << 4) || (data[9]-48));
     RTCwrite(RTCminutes,  ((data[10]-48) << 4) || (data[11]-48));
-    RTCwrite(RTCseconds,  ((data[12]-48) << 4) || (data[13]-48)));
+    RTCwrite(RTCseconds,  ((data[12]-48) << 4) || (data[13]-48));
     RTCwrite(RTCwp,       0b10000000);
 
     

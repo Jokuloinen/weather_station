@@ -52,6 +52,7 @@ void flashSetStatus(bool wpen, bool bp1, bool bp0){
 }
 
 uint8_t flashRead(uint16_t addr){
+  flashEnableWrites();
   SPI.beginTransaction(SPISettings(FLASHclock, MSBFIRST, SPI_MODE0));
   digitalWrite(FLASHselect, LOW);
   SPI.transfer(FLASHread); 
@@ -59,10 +60,12 @@ uint8_t flashRead(uint16_t addr){
   uint8_t data = SPI.transfer(0);
   SPI.endTransaction();
   digitalWrite(FLASHselect, HIGH);
+  flashEnableWrites();
   return data;
 }
 
 void flashWrite(uint16_t addr, uint8_t data){
+  flashEnableWrites();
   SPI.beginTransaction(SPISettings(FLASHclock, MSBFIRST, SPI_MODE0));
   digitalWrite(FLASHselect, LOW);
   SPI.transfer(FLASHwrite);
@@ -70,6 +73,7 @@ void flashWrite(uint16_t addr, uint8_t data){
   SPI.transfer(data);
   SPI.endTransaction();
   digitalWrite(FLASHselect, HIGH);
+  flashEnableWrites();
 }
 
 void initFlash(){
