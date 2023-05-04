@@ -3,13 +3,13 @@
 
 #define LDR1  5000.0//7500.0
 #define R1    470.0//5000
-#define L1Pin A0
+#define L1Pin A2
 #define L1x   12518931
 #define L1y   -1.405
 
 #define LDR2  10000.0//15000.0
 #define R2    470.0//10000.0
-#define L2Pin A2
+#define L2Pin A3
 #define L2x   12518931
 #define L2y   -1.405
 

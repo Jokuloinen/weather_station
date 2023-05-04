@@ -62,6 +62,37 @@ void RTCwrite(uint8_t operation, uint8_t data){
   pinMode(RTCio, OUTPUT);
 }
 
+
+void RTCmWrite(uint8_t addr, uint8_t data){
+  RTCwrite(RTCwp,       0b00000000);
+  //Serial.println("WRITE");
+  pinMode(RTCio, OUTPUT);
+  digitalWrite(RTCenable, HIGH);
+  delay(5);
+  //output operation to io
+  ioWrite(((addr&&0b11111)<<1) | 0b11000000);  //set command and read bits
+  //write to register
+  ioWrite(data);
+  digitalWrite(RTCenable, LOW);
+  pinMode(RTCio, OUTPUT);
+  RTCwrite(RTCwp,       0b10000000);
+}
+uint8_t RTCmRead(uint8_t addr){
+  //Serial.println("READ");
+  pinMode(RTCio, OUTPUT);
+  digitalWrite(RTCenable, HIGH);
+  delay(1);
+  //output operation to io
+  ioWrite(((addr&&0b11111)<<1) | 0b11000001);    //set command and read bit
+  pinMode(RTCio, INPUT);
+  //read from io
+  uint8_t reg = ioRead();
+  digitalWrite(RTCenable, LOW);
+  pinMode(RTCio, OUTPUT);
+  return reg;
+}
+
+
 void RTCunhalt(){
   if(RTCread(RTCseconds & 0b10000000)){
     //Serial.println("resetting clock");

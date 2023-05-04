@@ -1,7 +1,7 @@
 #include "pd.h"
 #include "Arduino.h"
 
-#define pdPin	 A0
+#define pdPin	 A5
 #define pdResist 470
 
 void pdInit(){

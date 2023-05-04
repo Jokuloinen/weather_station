@@ -3,7 +3,7 @@
 #include <stdint.h>
 //so, si, sck are from arduino spi
 #define FLASHclock  100
-#define FLASHselect 4 //this is slave select
+#define FLASHselect 10 //this is slave select
 
 uint8_t flashReadStatus();
 void flashDisableWrites();
