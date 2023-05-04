@@ -24,6 +24,8 @@ private slots:
 
     void on_TimeButton_clicked();
 
+    void on_getHistorical_clicked();
+
 private:
     Ui::MainWindow *ui;
     void connectToBluetoothDevice();

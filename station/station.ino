@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include "ldr.h"
-#define Hall A1
+#define Hall A2
 #include "rtc.h"
 #include "flash.h"
 #include "storage.h"
@@ -16,35 +16,39 @@ void setup() {
   BTSerial.begin(9600);
   delay(100);
   initLDR();
+  initFlash();
   RTCinit();
-  //RTCunhalt();
+  RTCunhalt();
   flashEnableWrites();
   RTCwrite(RTCwp,       0b10000000);
 }
 
 void Measure_WindSpeed(){
-  float data,speed,distance = 0.00;
-  int rotation, lock, print = 0;
-  int radius = 0.075; // !!! Remember to edit radius !!!
+  float data,distance = 0.00;
+  int rotation = 0;
+  int lock = 1;
+  float radius = 0.075; // !!! Remember to edit radius !!!
   float circumference = 2 * PI * radius;
   timer = millis();
   ctimer = timer;
   while((ctimer-timer) <= 10000){
   data = analogRead(Hall);
-  if(data <=560 ){
+  //Serial.println(data);
+  if(data <=530 ){
     lock=0;
   }
-  if(data >= 570 && lock <= 0){
+  if(data >= 540 && lock <= 0){
     rotation++;
     lock = 1;
-    //Serial.print(rotation);
+    Serial.print(rotation);
   }
   //Serial.println(data);
   delay(5);
   ctimer = millis();
   }
   distance = rotation * circumference;
-  speed = distance / 10;
+  wind = distance / 10;
+  rotation = 0;
 }
 
 void sendSomething()
@@ -59,7 +63,7 @@ void sendSomething()
   char myNumber[10];
   dtostrf(temperature, 4, 1, myNumber);
 
- // Measure_WindSpeed();
+  Measure_WindSpeed();
   char windd[10];
   dtostrf(wind, 4, 1, windd);
   
@@ -105,6 +109,84 @@ void updateClock()
     
 }
 
+void historyData()
+{
+  float results[3];
+  uint8_t tim[4];
+  
+  while (getFromEeprom(results, tim))
+  {
+    char rand1[10]; 
+    char rand2[10]; 
+    char rand3[10]; 
+    char rand4[10]; 
+ 
+    char message[20];
+   // for(int i = 0; i < 10; i++){
+  
+      dtostrf(results[0], 4, 1, rand1);
+      dtostrf(results[1], 4, 1, rand2);
+      dtostrf(results[2], 4, 1, rand3);
+
+
+      uint64_t pvm = 0;
+      pvm = (pvm + bed2b(tim[0]))*100;
+      pvm = (pvm + bed2b(tim[1]))*100;
+      pvm = (pvm + bed2b(tim[2]))*1000;
+      pvm = (pvm + bed2b(tim[3]));
+      
+      dtostrf(pvm, 4, 1, rand4);
+      
+      sprintf(message, "Date: %d, ", rand4);
+      BTSerial.write(message);
+      Serial.println(message);
+      
+      sprintf(message, "Temperature: %s C ", rand1);
+      BTSerial.write(message);
+      Serial.println(message);
+      
+      sprintf(message, "Wind %s m/s, ", rand2);
+      BTSerial.write(message);
+      Serial.println(message);
+      
+      sprintf(message, "Sun: %s W/m^2\n\n", rand3);
+      BTSerial.write(message);
+      Serial.println(message);
+      
+  }
+/*
+char rand1[10]; 
+char rand2[10]; 
+char rand3[10]; 
+char rand4[10]; 
+
+
+  char message[20];
+  for(int i = 0; i < 10; i++){
+
+    dtostrf(rand(), 4, 1, rand1);
+    dtostrf(rand(), 4, 1, rand2);
+    dtostrf(rand(), 4, 1, rand3);
+    dtostrf(rand(), 4, 1, rand4);
+    
+    sprintf(message, "Date: %d, ", rand4);
+    BTSerial.write(message);
+    Serial.println(message);
+    
+    sprintf(message, "Sun: %s W/m^2 ", rand1);
+    BTSerial.write(message);
+    Serial.println(message);
+    
+    sprintf(message, "Temp: %s C, ", rand2);
+    BTSerial.write(message);
+    Serial.println(message);
+    
+    sprintf(message, "Wind: %s m/s\n\n", rand3);
+    BTSerial.write(message);
+    Serial.println(message);
+    }*/
+}
+
 void loop() {
 
   String data;
@@ -123,5 +205,9 @@ void loop() {
     if (data == "2")
     {
       updateClock();
+    }
+    if (data == "3")
+    {
+      historyData();
     }
 }

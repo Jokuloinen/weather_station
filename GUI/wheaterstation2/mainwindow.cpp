@@ -37,16 +37,16 @@ void MainWindow::readBluetoothData()
         if (inputList.size() == 4) {
             float temp = inputList[0].toFloat();
             QString myString = QString::number(temp);
-            myString.remove(0, 1);
-            ui->temp->setText(myString);
+           // myString.remove(0, 1);
+            ui->temp->setText(myString + " °C");
             qDebug() << "First value: " << temp;
 
             float wind = inputList[1].toFloat();
-            ui->win->setText(QString::number(wind));
+            ui->win->setText(QString::number(wind) + " m/s");
             qDebug() << "Second value: " << wind;
 
             float solar = inputList[2].toFloat();
-            ui->sol->setText(QString::number(solar));
+            ui->sol->setText(QString::number(solar) + " W/m^2");
             qDebug() << "Third value: " << solar;
         }
         QObject::disconnect(socket, &QBluetoothSocket::readyRead, nullptr, nullptr);
@@ -92,5 +92,25 @@ void MainWindow::on_Update_clicked()
 void MainWindow::on_TimeButton_clicked()
 {
     askTime();
+}
+
+
+void MainWindow::on_getHistorical_clicked()
+{
+    QString str = "3\n";
+    QByteArray message = str.toUtf8();
+    socket->write(message);
+
+    QObject::connect(socket, &QBluetoothSocket::readyRead, [&](){
+        QByteArray data = socket->readAll();
+        qDebug() << "Received message: " << data;
+
+        //float dataa = data.toFloat();
+
+        ui->textBrowser->setText(data);
+
+
+        QObject::disconnect(socket, &QBluetoothSocket::readyRead, nullptr, nullptr);
+    });
 }
 

@@ -49,5 +49,6 @@ void RTCwrite(uint8_t operation, uint8_t data);
 void RTCunhalt();
 void RTCmWrite(uint8_t addr, uint8_t data);
 uint8_t RTCmRead(uint8_t addr);
+uint8_t bed2b(uint8_t number);
 
 #endif//RTC_H
