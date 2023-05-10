@@ -30,7 +30,6 @@ void flashDisableWrites(){
 void flashEnableWrites(){
   SPI.beginTransaction(SPISettings(FLASHclock, MSBFIRST, SPI_MODE0));
   digitalWrite(FLASHselect, LOW);
-  //uint8_t reg = 
   SPI.transfer(FLASHwren);
   SPI.endTransaction();
   digitalWrite(FLASHselect, HIGH);
@@ -83,13 +82,11 @@ void initFlash(){
   delay(25);
   //set statusregister
   uint8_t reg = flashReadStatus();
-//   Serial.println(reg, BIN);
   //if a write is in progress
   while(reg & 0b00000001){
     delay(1);
     reg = flashReadStatus();
   }
-//  Serial.println("init");
   if(reg != 0b00000000){
     delay(25);
     flashEnableWrites();

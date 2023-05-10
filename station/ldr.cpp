@@ -41,32 +41,15 @@ double readLDR(){
   //calculate lux for LDRs
   for(char i = 0; i<3; i++){
     double ar   = analogRead(LDRdata[i][0]);
-//    Serial.println(ar);
     double Rv   = ar/1023*5;
- //   Serial.println(Rv);
     double ldrV = 5-Rv;
-//    Serial.println(ldrV);
     double ldrR = ldrV/Rv*LDRdata[i][1];
-//    Serial.println(ldrR);
     double luks = LDRdata[i][4] * pow(ldrR, LDRdata[i][5]);
-//    Serial.println(luks);    
     lux[i] = luks;
-    //wattm[i] = 0.9290304*lux*LDRdata[i][2]/93;
-//    Serial.println();
   }
 
   //get a average or smth
-//  double tVAL = (lux[0]+lux[1]+lux[2])/3;               //average
   double tVAL = pow(lux[0]*lux[1]*lux[2], 1.0/3.0);     //geometric mean
-//  Serial.println(tVAL, 10);
-
-  //test print
-//  Serial.print(lux[0]);
-//  Serial.print(", ");
-//  Serial.print(lux[1]);
-//  Serial.print(", ");
-//  Serial.print(lux[2]);
-//  Serial.println();
 
   return 0.9290304*tVAL*LDRA/93;
 }
