@@ -20,15 +20,6 @@
 #define RTCctrl     0x90
 #define RTCmem      0xC0
 
-//RTC sram is used by storagelike this
-//address 0 is high byte of read location for eeprom
-//address 1 is coresponding lowbyte
-//address 2 if high byte of write location
-//address 3 lowbyte of write location
-//address 4 highbyte of how many entries buffer holds
-//address 5 lowbyte of the above
-
-
 //pins for RTC
 #define RTCenable 5
 #define RTCio     7

@@ -12,30 +12,22 @@ void advanceClock(){
 }
 
 void ioWrite(uint8_t operation){
-  //Serial.print("\tW ");
   for(uint8_t i = 0; i < 8; i++){
     digitalWrite(RTCio, (operation >> i) & 1); //set send bit
     advanceClock();
-    //Serial.print((operation >> i) & 1);
   }
-  //Serial.println();
 }
 
 uint8_t ioRead(){
-  //Serial.print("\tR ");
   uint8_t reg = 0;
   for(uint8_t i = 0; i < 8; i++){
-    //reg = reg << 1;//shift reg value
     reg = reg | (digitalRead(RTCio) << i);//add bit to reg
     advanceClock();
-    //Serial.print(digitalRead(RTCio));
   }
-  //Serial.println();
   return reg;
 }
 
 uint8_t RTCread(uint8_t operation){
-  //Serial.println("READ");
   pinMode(RTCio, OUTPUT);
   digitalWrite(RTCenable, HIGH);
   delay(1);
@@ -50,7 +42,6 @@ uint8_t RTCread(uint8_t operation){
 }
 
 void RTCwrite(uint8_t operation, uint8_t data){
-  //Serial.println("WRITE");
   pinMode(RTCio, OUTPUT);
   digitalWrite(RTCenable, HIGH);
   delay(5);
@@ -65,7 +56,6 @@ void RTCwrite(uint8_t operation, uint8_t data){
 
 void RTCmWrite(uint8_t addr, uint8_t data){
   RTCwrite(RTCwp,       0b00000000);
-  //Serial.println("WRITE");
   pinMode(RTCio, OUTPUT);
   digitalWrite(RTCenable, HIGH);
   delay(5);
@@ -78,7 +68,6 @@ void RTCmWrite(uint8_t addr, uint8_t data){
   RTCwrite(RTCwp,       0b10000000);
 }
 uint8_t RTCmRead(uint8_t addr){
-  //Serial.println("READ");
   pinMode(RTCio, OUTPUT);
   digitalWrite(RTCenable, HIGH);
   delay(1);
@@ -95,10 +84,7 @@ uint8_t RTCmRead(uint8_t addr){
 
 void RTCunhalt(){
   if(RTCread(RTCseconds & 0b10000000)){
-    //Serial.println("resetting clock");
-    //Serial.println(RTCread(RTCwp));
     RTCwrite(RTCwp, 0b00000000);
-    //Serial.println(RTCread(RTCwp));
       
     RTCwrite(RTCyear,     0b00100011);
     RTCwrite(RTCday,      0b00000010);
@@ -108,7 +94,6 @@ void RTCunhalt(){
     RTCwrite(RTCminutes,  0b00000000);
     RTCwrite(RTCseconds,  0b00000000);
     RTCwrite(RTCwp,       0b10000000);
-    //Serial.println(RTCread(RTCwp));
   }
 }
 

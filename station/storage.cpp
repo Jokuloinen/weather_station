@@ -4,9 +4,9 @@
 #include <Arduino.h>
 
 uint8_t readFromBuf(uint8_t* loc){
-    uint8_t waddr = RTCmRead(10);//<<8) | RTCmRead(3));
-    uint8_t raddr = RTCmRead(0);//<<8) | RTCmRead(1));
-    uint8_t filld = RTCmRead(5);//<<8) | RTCmRead(5));
+    uint8_t waddr = RTCmRead(10);
+    uint8_t raddr = RTCmRead(0);
+    uint8_t filld = RTCmRead(5);
     Serial.println("read:: fill:"+String(filld)+" wl:"+String(waddr)+" rl:"+String(raddr));
     if(filld == 0){
       return 0;//no data available
@@ -38,23 +38,10 @@ uint8_t readFromBuf(uint8_t* loc){
 void writeToBuf(uint8_t d1, uint8_t d2, uint8_t d3, uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7, uint8_t d8){
   //flashEnableWrites();
   delay(5);
-    uint8_t waddr = RTCmRead(10);//<<8) | RTCmRead(3));
-    uint8_t raddr = RTCmRead(0);//<<8) | RTCmRead(1));
-    uint8_t filld = RTCmRead(5);//<<8) | RTCmRead(5));
+    uint8_t waddr = RTCmRead(10);
+    uint8_t raddr = RTCmRead(0);
+    uint8_t filld = RTCmRead(5);
 
-  /*  for(uint8_t i = 0; i <8; i++){
-      delay(5);
-      //while( flashRead((waddr*8)+i) != data[i]){
-        flashWrite(waddr*8+i, data[i]);
-        //flashEnableWrites();
-      //}*/
-      /*flashWrite(waddr*8+i, data[i]);
-      */
-      /*Serial.print((waddr*8)+i);
-      Serial.print(" ");
-      Serial.print(flashRead((waddr*8)+i), BIN);
-      Serial.print(" ");
-    }*/
     Serial.println(flashReadStatus(), BIN);
     flashWrite(waddr*8+0, d1);Serial.print(d1);delay(5);Serial.print(flashRead((waddr*8)+0));delay(5);
     flashWrite(waddr*8+1, d2);Serial.print(d2);delay(5);Serial.print(flashRead((waddr*8)+1));delay(5);
@@ -85,7 +72,6 @@ void sendToEeprom(float temperature, float wind, float sun)
 
 
   //compress clock
-//  uint8_t second = RTCSecondRead();
   uint8_t hour   = RTCHourRead();
   uint8_t date   = RTCDateRead();
   uint8_t month  = RTCMonthRead();
@@ -108,13 +94,11 @@ void sendToEeprom(float temperature, float wind, float sun)
   writeBuffer[5] = tempi;
   writeBuffer[6] = windi;
   writeBuffer[7] = suni;
-  //Serial.Println(temps)
   Serial.println(String(suni) +" "+ String(temps) +" "+ String(tempi) +" "+ String(windi));
 Serial.println(String(hour) +" "+ String(date) +" "+ String(month) +" "+ String(year));
 Serial.println(String(writeBuffer[0]) +" "+ String(writeBuffer[1]) +" "+ String(writeBuffer[2]) +" "+ String(writeBuffer[3]) +" "+String(writeBuffer[4]) +" "+ String(writeBuffer[5]) +" "+ String(writeBuffer[6]) +" "+ String(writeBuffer[7]));
   
   writeToBuf(hour, date, month, year, temps, tempi, windi, suni);
-//  writeToBuf(writeBuffer);
 }
 
 int getFromEeprom(float* results, uint8_t* tim){
@@ -124,10 +108,10 @@ int getFromEeprom(float* results, uint8_t* tim){
 
   if(readFromBuf(measurments)){
     retVal = 1;
-    uint8_t hour = measurments[0];// & 0b11)*10) + (measurments[2] >> 4);
-    uint8_t day = measurments[1];//>>2)&0b11)*10) + (((measurments[2]&0b11)<<2)|(measurments[3]>>6));
-    uint8_t month = measurments[2];//>>5) & 1)*10) + ((measurments[3]>>1)&0b1111));
-    uint8_t year = measurments[3];//;&1)<<3)|((measurments[4]>>5)&0b111))*10)+((measurments[4]>>1)&0b1111));
+    uint8_t hour = measurments[0];
+    uint8_t day = measurments[1];
+    uint8_t month = measurments[2];
+    uint8_t year = measurments[3];
 
   Serial.print("hou:");
   Serial.println(hour);
@@ -138,9 +122,9 @@ int getFromEeprom(float* results, uint8_t* tim){
   Serial.print("yea:");
   Serial.println(year);
 
-    uint8_t rtmp = measurments[5];//>>1;
-    uint8_t rwnd = measurments[6];//>>1;
-    uint16_t rsol = measurments[7];//&0b1)<<10) | ((measurments[6]&0b1)<<9) | measurments[7];
+    uint8_t rtmp = measurments[5];
+    uint8_t rwnd = measurments[6];
+    uint16_t rsol = measurments[7];
     
     float tmp=0.13725490196078431373*rtmp;
     tmp *= (measurments[4] != 0) ? -1: 1;

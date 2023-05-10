@@ -1,0 +1,116 @@
+digraph järjestelmäarkkitehtuuri {
+
+	fontname = "Source Code Pro"
+	node [
+		fontname = "Source Code Pro"
+	]
+	edge [
+		fontname = "Source Code Pro";
+	]
+  	graph [
+		rankdir = "LR";
+	]
+
+	desc [
+		shape=signature;
+		label="System architecture";
+	]
+
+	
+
+	subgraph cluster_0 {
+		label="Weather station";
+		MCU [shape="record";
+			label="
+			MCU\n
+			|
+			Atmega 328p\l
+			|
+			C++\l
+			arduino libs\l
+			|
+			sensor measurment\l
+			sensor calculations\l
+			managment of data storage\l
+			managment bluetooth communication\l
+		"];
+
+		BT [shape="record"
+			label="
+			Bluetooth Module\n
+			|
+			JDY-31\l
+			|
+			AT Commands\l
+			|
+			send and recive data from bluetooth\l
+		"];
+
+		FLASH [shape="record";
+			label="
+			Eeprom\n
+			|
+			X25640P\l
+			|
+			Data storage\l
+		"];
+
+		RTC [shape="record";
+			label="
+			RTC\n
+			|
+			DS1302\l
+			|
+			Time keeping\l
+			Temporary storage\l
+		"];
+
+		IRM [shape="record";
+			label="
+			Pyranometer\n
+			|
+			3 LRDs\l
+			|
+			light intensity\l
+		"];
+
+		TM [shape="record";
+			label="
+			Thermometer\n
+			|
+			NTC resistor\l
+			|
+			temperature measurment\l
+		"];
+
+		WSM [shape="record";
+			label="
+			Anemometer\n
+			|
+			wind speed measurment\l
+		"];
+
+		FLASH->MCU	[label="SPI"; dir=both];
+		RTC->MCU	[label="3 Wire serial"; dir=both];
+		BT->MCU		[label="UART"; dir=both];
+		IRM->MCU	[label="3 analog input pins";];
+		TM->MCU		[label="one analog input pin"];
+		WSM->MCU	[label="one analog input pin";];
+	}
+
+	subgraph cluster_1{
+		label="Computer";
+		GUI [shape="record";
+			label="
+			GUI program\n
+			|
+			C++\l
+			QT\l
+			|
+			Weather station managment\l
+			Data logging\l
+		"]
+	}
+
+	GUI->BT	[label="Bluetooth"; dir=both; style=dotted];
+}
